@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Plus, Edit2, Trash2, Search, X } from "lucide-react";
 
 export default function ProductList({ products, onAdd, onUpdate, onDelete }) {
@@ -165,7 +166,7 @@ export default function ProductList({ products, onAdd, onUpdate, onDelete }) {
       </div>
 
       {/* Add/Edit Modal */}
-      {isModalOpen && (
+      {isModalOpen && createPortal(
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
@@ -240,7 +241,8 @@ export default function ProductList({ products, onAdd, onUpdate, onDelete }) {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

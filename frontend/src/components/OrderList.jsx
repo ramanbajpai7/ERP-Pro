@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Plus, Eye, Trash2, X, PlusCircle, MinusCircle, ShoppingBag } from "lucide-react";
 
 export default function OrderList({ orders, products, customers, onAdd, onDelete }) {
@@ -207,7 +208,7 @@ export default function OrderList({ orders, products, customers, onAdd, onDelete
       </div>
 
       {/* Place Order Modal */}
-      {isCreateModalOpen && (
+      {isCreateModalOpen && createPortal(
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: "600px" }}>
             <div className="modal-header">
@@ -332,11 +333,12 @@ export default function OrderList({ orders, products, customers, onAdd, onDelete
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Order Details Popup */}
-      {isDetailModalOpen && selectedOrder && (
+      {isDetailModalOpen && selectedOrder && createPortal(
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
@@ -416,7 +418,8 @@ export default function OrderList({ orders, products, customers, onAdd, onDelete
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
