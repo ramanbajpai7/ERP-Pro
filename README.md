@@ -1,4 +1,4 @@
-# Antigravity ERP — Inventory & Order Management System
+# ERP Pro — Inventory & Order Management System
 
 A production-ready, full-stack **Inventory & Order Management System** built with **FastAPI**, **PostgreSQL**, **React (Vite)**, and **Docker**. The platform is designed with rich dark-slate glassmorphic aesthetics and incorporates strict business logic verification, inventory stock safety locks, auto billing calculations, and item stock restoration.
 
