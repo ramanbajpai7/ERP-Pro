@@ -56,5 +56,12 @@ def read_order(order_id: int, db: Session = Depends(get_db)):
 @router.delete("/{order_id}", response_model=schemas.OrderOut)
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     # Deleting an order cancels it and restores inventory
-    db_order = crud.delete_order(db=db, order_id=order_id)
-    return format_order(db_order, db)
+    db_order = crud.get_order(db=db, order_id=order_id)
+    if not db_order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Order with ID {order_id} not found."
+        )
+    formatted_order = format_order(db_order, db)
+    crud.delete_order(db=db, order_id=order_id)
+    return formatted_order

@@ -12,6 +12,8 @@ from .database import Base
 from . import models
 from . import schemas
 from . import crud
+from fastapi.testclient import TestClient
+from .main import app, get_db
 
 # Set up clean SQLite in-memory test database
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
@@ -23,11 +25,21 @@ class TestInventoryOrderManagement(unittest.TestCase):
         # Create all tables for the clean in-memory database
         Base.metadata.create_all(bind=engine)
         self.db = TestingSessionLocal()
+        
+        # Override get_db dependency for integration tests using TestClient
+        def override_get_db():
+            try:
+                yield self.db
+            finally:
+                pass
+        app.dependency_overrides[get_db] = override_get_db
+        self.client = TestClient(app)
 
     def tearDown(self):
         # Close database session and drop all tables
         self.db.close()
         Base.metadata.drop_all(bind=engine)
+        app.dependency_overrides.clear()
 
     def test_create_product_success(self):
         # Test creating a valid product
@@ -210,6 +222,51 @@ class TestInventoryOrderManagement(unittest.TestCase):
         # Verify order is gone
         db_order = crud.get_order(self.db, order.id)
         self.assertIsNone(db_order)
+
+    def test_api_deletion_endpoints_success(self):
+        # 1. Create a product, customer, and order in the DB
+        product = crud.create_product(self.db, schemas.ProductCreate(
+            name="Test Widget", sku="WIDGET-01", price=Decimal("19.99"), quantity=10
+        ))
+        customer = crud.create_customer(self.db, schemas.CustomerCreate(
+            name="Test Customer", email="test.cust@example.com", phone="12345678"
+        ))
+        order = crud.create_order(self.db, schemas.OrderCreate(
+            customer_id=customer.id,
+            items=[schemas.OrderItemCreate(product_id=product.id, quantity=2)]
+        ))
+
+        # 2. Test DELETE Order Endpoint (/api/orders/{id})
+        response = self.client.delete(f"/api/orders/{order.id}")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["id"], order.id)
+        self.assertEqual(data["customer_id"], customer.id)
+        self.assertEqual(len(data["items"]), 1)
+        self.assertEqual(data["items"][0]["product_id"], product.id)
+        
+        # Verify order is deleted from DB
+        self.assertIsNone(crud.get_order(self.db, order.id))
+        
+        # 3. Test DELETE Customer Endpoint (/api/customers/{id})
+        response = self.client.delete(f"/api/customers/{customer.id}")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["id"], customer.id)
+        self.assertEqual(data["name"], "Test Customer")
+        
+        # Verify customer is deleted from DB
+        self.assertIsNone(crud.get_customer(self.db, customer.id))
+
+        # 4. Test DELETE Product Endpoint (/api/products/{id})
+        response = self.client.delete(f"/api/products/{product.id}")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["id"], product.id)
+        self.assertEqual(data["sku"], "WIDGET-01")
+
+        # Verify product is deleted from DB
+        self.assertIsNone(crud.get_product(self.db, product.id))
 
 if __name__ == "__main__":
     unittest.main()

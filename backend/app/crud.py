@@ -75,9 +75,12 @@ def delete_product(db: Session, product_id: int):
             detail="Cannot delete product as it is referenced in one or more orders."
         )
 
+    # Convert to Pydantic schema before deletion to avoid ObjectDeletedError
+    product_out = schemas.ProductOut.model_validate(db_product)
+
     db.delete(db_product)
     db.commit()
-    return db_product
+    return product_out
 
 
 # ----------------- CUSTOMER CRUD -----------------
@@ -128,9 +131,12 @@ def delete_customer(db: Session, customer_id: int):
             if product:
                 product.quantity += item.quantity
                 
+    # Convert to Pydantic schema before deletion to avoid ObjectDeletedError
+    customer_out = schemas.CustomerOut.model_validate(db_customer)
+
     db.delete(db_customer)
     db.commit()
-    return db_customer
+    return customer_out
 
 
 # ----------------- ORDER CRUD -----------------
