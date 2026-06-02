@@ -19,5 +19,5 @@ EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1
 
-# Run API with Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run API with Uvicorn, binding to dynamic $PORT injected by cloud providers (defaults to 8000)
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
