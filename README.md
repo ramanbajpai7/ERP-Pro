@@ -2,6 +2,10 @@
 
 A production-ready, full-stack **Inventory & Order Management System** built with **FastAPI**, **PostgreSQL**, **React (Vite)**, and **Docker**. The platform is designed with rich dark-slate glassmorphic aesthetics and incorporates strict business logic verification, inventory stock safety locks, auto billing calculations, and item stock restoration.
 
+### 🌐 Live Production Deployments
+* **Frontend Web Dashboard**: [https://erp-pro-teal.vercel.app/](https://erp-pro-teal.vercel.app/)
+* **Production API Backend**: [https://erp-pro-xw0n.onrender.com](https://erp-pro-xw0n.onrender.com)
+
 ---
 
 ## 🚀 Quick Start (Dockerized Bootstrapping)
