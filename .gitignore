@@ -1,0 +1,25 @@
+# Dependency directories
+node_modules/
+venv/
+backend/venv/
+
+# Local configuration files
+.env
+.env.local
+
+# Compile / Build directories
+dist/
+frontend/dist/
+
+# Databases
+*.db
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# OS/Editor assets
+.DS_Store
+.vscode/
+.idea/
+npm-debug.log*
