@@ -211,7 +211,7 @@ export default function App() {
       <aside className="sidebar">
         <div className="sidebar-logo">
           <TrendingUp size={24} className="text-primary" />
-          <span>Antigravity ERP</span>
+          <span>ERP Pro</span>
         </div>
 
         <nav className="sidebar-nav">
